@@ -25,7 +25,7 @@ class _HomeNavigatorState extends State<HomeNavigator> {
     MapPage(),
     ProfilePage(),
   ];
-  //getcurrent user detils
+  
 
   @override
   void initState() {

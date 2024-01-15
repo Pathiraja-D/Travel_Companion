@@ -12,22 +12,21 @@ class PlanServices {
 
   PlanServices({this.note});
 
-  Future<bool> createPlanInPlansCollection(
-      String plantitle, String planDescription, String planLocations) async {
+  Future<bool> createPlanInPlansCollection(Note note) async {
     try {
       await _firestore
           .collection('Users')
           .doc(_auth.currentUser!.uid)
           .collection('Notes')
-          .doc(note!.noteId)
+          .doc(note.noteId)
           .collection('Plan')
           .add({
-        'noteId': note!.noteId,
-        'title': plantitle,
-        'planDescription': planDescription,
-        'planLocations': planLocations,
+        'noteId': note.noteId,
+        'title': note.title,
+        'planDescription': '',
+        'planLocations': '',
         'date': Timestamp.now(),
-        'colorId': note!.colorId
+        'colorId': note.colorId
       });
       print("Plan added");
       return true;

@@ -6,11 +6,13 @@ import 'package:travel_journal/components/app_colors.dart';
 import 'package:travel_journal/models/journey.dart';
 import 'package:travel_journal/models/note_model.dart';
 import 'package:travel_journal/services/notes/note_services.dart';
+import 'package:travel_journal/services/plan/plan_services.dart';
 
 class JourneyServices {
   Note? note;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  PlanServices planService = PlanServices();
   NoteServices noteServices = NoteServices();
   int colorId = Random().nextInt(AppColors.cardsColors.length);
 
@@ -25,6 +27,9 @@ class JourneyServices {
       List<String> imageURLs) async {
     try {
       String noteId = await noteServices.createNoteInNotesCollection();
+      Note immediateNote = await noteServices.getOneNote(noteId);
+      await planService.createPlanInPlansCollection(immediateNote);
+
       await _firestore
           .collection('Users')
           .doc(_auth.currentUser!.uid)
@@ -104,7 +109,6 @@ class JourneyServices {
         await querySnapshot.docs.first.reference.update({
           'imageURLs': FieldValue.arrayUnion(imageURLs),
         });
-        print(note!.noteId);
         print('Image URLs  updated successfully!');
       } else {
         print('No Journey found with the provided noteId.');
@@ -145,7 +149,6 @@ class JourneyServices {
             .update({
           'title': title,
         });
-        print(note!.noteId);
         print('Journey updated successfully!');
       } else {
         print('No Journey found with the provided noteId.');

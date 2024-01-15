@@ -184,40 +184,6 @@ class _AppSetUpPageState extends State<ProfilePage> {
                   SizedBox(
                     height: 80,
                   ),
-                  Container(
-                    margin: EdgeInsets.only(left: 15, right: 15),
-                    child: TextFormField(
-                      // validator: (value) => value?.isEmpty == true
-                      //     ? 'Enter your User Name'
-                      //     : null,
-                      keyboardType: TextInputType.emailAddress,
-                      obscureText: _obscureText,
-                      decoration: InputDecoration(
-                        errorStyle: TextStyle(color: Colors.white),
-                        hintText: "Password",
-                        prefixIcon: Icon(
-                          Icons.lock,
-                          color: AppColors.mainColor,
-                        ),
-                        suffixIcon: IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _obscureText = !_obscureText;
-                            });
-                          },
-                          icon: Icon(
-                            _obscureText
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: AppColors.mainColor,
-                          ),
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                  ),
                   SizedBox(
                     height: 40,
                   ),

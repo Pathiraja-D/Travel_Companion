@@ -69,245 +69,250 @@ class _JourneyPageState extends State<JourneyAddPage> {
           backgroundColor: AppColors.mainColor,
         ),
         body: SingleChildScrollView(
-          child: Form(
-            key: formKey,
-            child: Column(children: [
-              Container(
-                height: height * 0.3,
-                width: width,
-                child: CarouselSlider.builder(
-                  options: CarouselOptions(
-                    height: 400.0,
-                    autoPlay: true,
-                    viewportFraction: 1,
-                    enableInfiniteScroll: false,
-                    reverse: true,
-                    autoPlayInterval: Duration(seconds: 2),
-                  ),
-                  itemCount: imagesList.length,
-                  itemBuilder: (context, index, realIndex) {
-                    final assetsImage = imagesList[index];
+          child: Container(
+            height: height,
+            width: width,
+            child: Form(
+              key: formKey,
+              child: Column(children: [
+                Container(
+                  height: height * 0.3,
+                  width: width,
+                  child: CarouselSlider.builder(
+                    options: CarouselOptions(
+                      height: 400.0,
+                      autoPlay: true,
+                      viewportFraction: 1,
+                      enableInfiniteScroll: false,
+                      reverse: true,
+                      autoPlayInterval: Duration(seconds: 2),
+                    ),
+                    itemCount: imagesList.length,
+                    itemBuilder: (context, index, realIndex) {
+                      final assetsImage = imagesList[index];
 
-                    return buildImages(assetsImage, index);
+                      return buildImages(assetsImage, index);
+                    },
+                  ),
+                ),
+                FloatingActionButton(
+                  onPressed: () async {
+                    pickImages();
+                    if (pickedFiles != null && pickedFiles!.isNotEmpty) {
+                      // Wait for the completion of uploadImages
+
+                      // Now you have the downloadURLs, and you can proceed with other logic
+                      // ...
+                      setState(() {});
+                    } else {
+                      print('No images selected');
+                    }
                   },
+                  child: Icon(Icons.add),
                 ),
-              ),
-              FloatingActionButton(
-                onPressed: () async {
-                  pickImages();
-                  if (pickedFiles != null && pickedFiles!.isNotEmpty) {
-                    // Wait for the completion of uploadImages
-
-                    // Now you have the downloadURLs, and you can proceed with other logic
-                    // ...
-                    setState(() {});
-                  } else {
-                    print('No images selected');
-                  }
-                },
-                child: Icon(Icons.add),
-              ),
-              Container(
-                child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        "Data and time",
-                        style: TextStyle(color: Colors.black, fontSize: 16),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                        "Title",
-                        style: TextStyle(color: Colors.black, fontSize: 20),
-                      ),
-                      TextFormField(
-                        enabled: addingFinish,
-                        controller: titlecontroller,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
+                Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 10,
                         ),
-                        minLines: 1,
-                        maxLines: 3,
-                        keyboardType: TextInputType.multiline,
-                        decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
+                        Text(
+                          "Data and time",
+                          style: TextStyle(color: Colors.black, fontSize: 16),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          "Title",
+                          style: TextStyle(color: Colors.black, fontSize: 20),
+                        ),
+                        TextFormField(
+                          enabled: addingFinish,
+                          controller: titlecontroller,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                          ),
+                          minLines: 1,
+                          maxLines: 3,
+                          keyboardType: TextInputType.multiline,
+                          decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)))),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          "Journey Details",
+                          style: TextStyle(color: Colors.black, fontSize: 20),
+                        ),
+                        TextFormField(
+                          enabled: addingFinish,
+                          controller: descriptioncontroller,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                          ),
+                          minLines: 1,
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
+                          decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(
                                 borderRadius:
-                                    BorderRadius.all(Radius.circular(10)))),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        "Journey Details",
-                        style: TextStyle(color: Colors.black, fontSize: 20),
-                      ),
-                      TextFormField(
-                        enabled: addingFinish,
-                        controller: descriptioncontroller,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                        ),
-                        minLines: 1,
-                        maxLines: null,
-                        keyboardType: TextInputType.multiline,
-                        decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                            )),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        "Saved Locations",
-                        style: TextStyle(color: Colors.black, fontSize: 20),
-                      ),
-                      TextFormField(
-                        enabled: addingFinish,
-                        controller: locationcontroller,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                        ),
-                        minLines: 1,
-                        maxLines: null,
-                        keyboardType: TextInputType.multiline,
-                        decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Colors.white,
-                            border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
-                            )),
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      buildProgress(),
-                      Center(
-                        child: Container(
-                          height: height * 0.05,
-                          width: width * 0.3,
-                          child: ElevatedButton(
-                              onPressed: () async {
-                                journeyCreated = await journeyServices
-                                    .createJourneyInJourneyCollection(
-                                        titlecontroller.text,
-                                        descriptioncontroller.text,
-                                        locationcontroller.text,
-                                        downloadURLs);
-                                note = await noteServices
-                                    .getOneNote(journeyCreated);
-                                bool uploadDone =
-                                    await uploadImages(note.noteId);
-
-                                if (journeyCreated.isNotEmpty &&
-                                    uploadDone == true &&
-                                    downloadURLs.isNotEmpty) {
-                                  print("inside if elsse");
-                                  await journeyServices.updateJourneyImageURLs(
-                                      downloadURLs, journeyCreated);
-                                  setState(() {
-                                    addingFinish = false;
-                                    imagesList = [];
-                                  });
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content:
-                                          Text("Journey Added Successfully"),
-                                      duration: Duration(
-                                          seconds:
-                                              3), // Adjust the duration as needed
-                                    ),
-                                  );
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                primary: AppColors.mainColor,
-                              ),
-                              child: Text(
-                                "Save",
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
+                                    BorderRadius.all(Radius.circular(10)),
                               )),
                         ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Center(
-                        child: Container(
-                          height: height * 0.05,
-                          width: width * 0.6,
-                          child: ElevatedButton(
-                              onPressed: () async {
-                                if (note.noteId.isNotEmpty) {
-                                  await Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                        builder: (context) => PlanAddPage(
-                                              note: note,
-                                            )),
-                                  );
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content:
-                                          Text("Please add the journey first"),
-                                      duration: Duration(
-                                          seconds:
-                                              3), // Adjust the duration as needed
-                                    ),
-                                  );
-                                }
-
-                                print(note);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                primary: AppColors.mainColor,
-                              ),
-                              child: Row(
-                                children: [
-                                  Spacer(),
-                                  Text(
-                                    "Make yor Plan",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 20),
-                                  ),
-                                  SizedBox(
-                                    width: 20,
-                                  ),
-                                  IconTheme(
-                                      data: IconThemeData(
-                                          color: Colors.white, size: 30),
-                                      child: Icon(
-                                        Icons.arrow_right_alt,
-                                      )),
-                                  Spacer(),
-                                ],
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          "Saved Locations",
+                          style: TextStyle(color: Colors.black, fontSize: 20),
+                        ),
+                        TextFormField(
+                          enabled: addingFinish,
+                          controller: locationcontroller,
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 20,
+                          ),
+                          minLines: 1,
+                          maxLines: null,
+                          keyboardType: TextInputType.multiline,
+                          decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                              border: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10)),
                               )),
                         ),
-                      ),
-                    ],
+                        SizedBox(
+                          height: 30,
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        buildProgress(),
+                        Center(
+                          child: Container(
+                            height: height * 0.05,
+                            width: width * 0.3,
+                            child: ElevatedButton(
+                                onPressed: () async {
+                                  journeyCreated = await journeyServices
+                                      .createJourneyInJourneyCollection(
+                                          titlecontroller.text,
+                                          descriptioncontroller.text,
+                                          locationcontroller.text,
+                                          downloadURLs);
+                                  note = await noteServices
+                                      .getOneNote(journeyCreated);
+                                  bool uploadDone =
+                                      await uploadImages(note.noteId);
+
+                                  if (journeyCreated.isNotEmpty &&
+                                      uploadDone == true &&
+                                      downloadURLs.isNotEmpty) {
+                                    print("inside if elsse");
+                                    await journeyServices
+                                        .updateJourneyImageURLs(
+                                            downloadURLs, journeyCreated);
+                                    setState(() {
+                                      addingFinish = false;
+                                      imagesList = [];
+                                    });
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content:
+                                            Text("Journey Added Successfully"),
+                                        duration: Duration(
+                                            seconds:
+                                                3), // Adjust the duration as needed
+                                      ),
+                                    );
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: AppColors.mainColor,
+                                ),
+                                child: Text(
+                                  "Save",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 20),
+                                )),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Center(
+                          child: Container(
+                            height: height * 0.05,
+                            width: width * 0.6,
+                            child: ElevatedButton(
+                                onPressed: () async {
+                                  if (note.noteId.isNotEmpty) {
+                                    await Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (context) => PlanAddPage(
+                                                note: note,
+                                              )),
+                                    );
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                            "Please add the journey first"),
+                                        duration: Duration(
+                                            seconds:
+                                                3), // Adjust the duration as needed
+                                      ),
+                                    );
+                                  }
+
+                                  print(note);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  primary: AppColors.mainColor,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Spacer(),
+                                    Text(
+                                      "Make yor Plan",
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 20),
+                                    ),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    IconTheme(
+                                        data: IconThemeData(
+                                            color: Colors.white, size: 30),
+                                        child: Icon(
+                                          Icons.arrow_right_alt,
+                                        )),
+                                    Spacer(),
+                                  ],
+                                )),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ]),
+              ]),
+            ),
           ),
         ));
   }
