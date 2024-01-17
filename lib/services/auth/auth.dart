@@ -8,6 +8,7 @@ import 'package:travel_journal/models/user_model.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final GoogleSignIn googleSignIn = GoogleSignIn();
 
   UserModel? _userWithFirebaseUserUid(User? user) {
     return user != null ? UserModel(uid: user.uid) : null;
@@ -46,10 +47,14 @@ class AuthService {
       final UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       final User? user = result.user;
-      return _userWithFirebaseUserUid(user);
+      if (result.user == null) {
+        return "UserNull";
+      } else {
+        return _userWithFirebaseUserUid(user);
+      }
     } catch (e) {
       print(e.toString());
-      return e;
+      return 0;
     }
   }
 
@@ -68,11 +73,11 @@ class AuthService {
       if (userCreatedInFirestore) {
         return _userWithFirebaseUserUid(user);
       } else {
-        throw Error();
+        return false;
       }
     } catch (e) {
       print(e.toString());
-      return null;
+      return 0;
     }
   }
 
@@ -120,31 +125,72 @@ class AuthService {
   }
 
   //gmail signup
-  Future<bool> signInWithGoogle() async {
-    final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-    final GoogleSignIn googleSignIn = GoogleSignIn();
-    final GoogleSignInAccount? googleSignInAccount =
-        await googleSignIn.signIn();
-    final GoogleSignInAuthentication googleSignInAuthentication =
-        await googleSignInAccount!.authentication;
+  Future<bool> signUpWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
 
-    final AuthCredential credential = GoogleAuthProvider.credential(
+      if (googleSignInAccount == null) {
+        // Handle the case where Google Sign-In was canceled or failed.
+        return false;
+      }
+
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
         idToken: googleSignInAuthentication.idToken,
-        accessToken: googleSignInAuthentication.accessToken);
+        accessToken: googleSignInAuthentication.accessToken,
+      );
 
-    UserCredential result = await firebaseAuth.signInWithCredential(credential);
-    User? userDetils = result.user;
+      UserCredential result = await _auth.signInWithCredential(credential);
+      User? userDetails = result.user;
 
-    bool gmailuserCreatedInFirestore = await createUserInUsersCollection(
+      if (userDetails == null) {
+        // Handle the case where user details are null.
+        return false;
+      }
+
+      bool gmailUserCreatedInFirestore = await createUserInUsersCollection(
         FireStoreUser(
-            uid: userDetils!.uid,
-            email: userDetils.email,
-            username: userDetils.displayName));
+          uid: userDetails.uid,
+          email: userDetails.email,
+          username: userDetails.displayName,
+        ),
+      );
 
-    if (gmailuserCreatedInFirestore) {
-      return true;
-    } else {
+      return gmailUserCreatedInFirestore;
+    } catch (error) {
+      print("Error during Google Sign-In: $error");
       return false;
+    }
+  }
+
+  Future<User?> signInWithGoogle() async {
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
+
+      if (googleSignInAccount == null) {
+        return null; // User canceled Google Sign-In
+      }
+
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleSignInAuthentication.accessToken,
+        idToken: googleSignInAuthentication.idToken,
+      );
+
+      final UserCredential authResult =
+          await _auth.signInWithCredential(credential);
+
+      final User? user = authResult.user;
+      return user;
+    } catch (error) {
+      print('Google Sign-In Error: $error');
+      return null;
     }
   }
 }

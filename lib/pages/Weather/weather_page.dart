@@ -33,19 +33,7 @@ class _WeatherPageState extends State<WeatherPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Row(
-            children: [
-              Text("Short Weather"),
-              Spacer(),
-              PopupMenuButton(
-                itemBuilder: (BuildContext) => [
-                  PopupMenuItem(child: Text("edit")),
-                  PopupMenuItem(child: Text("delete")),
-                  PopupMenuItem(child: Text("Test")),
-                ],
-              ),
-            ],
-          ),
+          title: Text("Short Weather"),
         ),
         body: SingleChildScrollView(
           child: _buildUI(),

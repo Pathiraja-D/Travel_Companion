@@ -33,7 +33,7 @@ class _PlanAddPageState extends State<PlanAddPage> {
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: AppColors.notePlan,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0.0,
         leading: IconTheme(
@@ -51,20 +51,13 @@ class _PlanAddPageState extends State<PlanAddPage> {
               },
               child: Icon(Icons.arrow_back)),
         ),
-        title: Text("Journey Plan",
-            style: TextStyle(
-                color: Colors.white,
-                fontSize: 25,
-                fontWeight: FontWeight.normal)),
-        actions: [
-          IconButton(
-              icon: IconTheme(
-                  data: IconThemeData(color: Colors.white, size: 25),
-                  child: Icon(Icons.menu)),
-              onPressed: () {
-                // Navigator.of(context).pushNamed(AppRoutes.profilepage);
-              })
-        ],
+        title: Center(
+          child: Text("Journey Plan",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 25,
+                  fontWeight: FontWeight.normal)),
+        ),
         backgroundColor: AppColors.mainColor,
       ),
       body: Container(
@@ -166,10 +159,7 @@ class _PlanAddPageState extends State<PlanAddPage> {
                             )),
                       ),
                       SizedBox(
-                        height: 80,
-                      ),
-                      SizedBox(
-                        height: 30,
+                        height: 110,
                       ),
                       ElevatedButton(
                           onPressed: () async {

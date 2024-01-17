@@ -32,27 +32,20 @@ class _RemindersPageState extends State<RemindersPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.mainColor,
-        title: Row(
-          children: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.arrow_back_sharp,
-                color: Colors.white,
-                size: 30,
-              ),
+        leading: IconTheme(
+          data: IconThemeData(
+            color: Colors.white,
+            size: 25,
+          ),
+          child: GestureDetector(onTap: () {}, child: Icon(Icons.arrow_back)),
+        ),
+        title: Center(
+          child: const Text(
+            'Notifications',
+            style: TextStyle(
+              color: Colors.white,
             ),
-            Expanded(
-              child: Center(
-                child: const Text(
-                  'Notifications',
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
       body: Padding(

@@ -173,17 +173,16 @@ class _LoginPageState extends State<LoginPage> {
                             dynamic result = await _auth
                                 .signInWithEmailAndPassword(_email, _password);
 
-                            if (result.uid == null) {
-                              showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      content: Text(result.code),
-                                    );
-                                  });
-                            }
-
-                            if (result != null) {
+                            if (result == 0) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content:
+                                      Text("Check email and password again"),
+                                  duration: Duration(seconds: 2),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            } else {
                               Navigator.of(context)
                                   .pushNamed(AppRoutes.homenavigation);
                             }
@@ -206,8 +205,9 @@ class _LoginPageState extends State<LoginPage> {
                         height: 10,
                       ),
                       GestureDetector(
-                        onTap: () => Navigator.of(context)
-                            .pushNamed(AppRoutes.notehomepage),
+                        onTap: () async {
+                          await _auth.signInWithGoogle();
+                        },
                         child: Container(
                           height: 40,
                           width: width * 0.7,

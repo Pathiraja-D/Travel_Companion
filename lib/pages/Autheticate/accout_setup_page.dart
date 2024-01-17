@@ -18,9 +18,9 @@ class AppSetUpPage extends StatefulWidget {
 class _AppSetUpPageState extends State<AppSetUpPage> {
   bool _obscureText = true;
   final bool _isSigning = false;
-  String _username = '';
-  String _email = '';
-  String _password = '';
+  String username = '';
+  String email = '';
+  String password = '';
   final _formKey = GlobalKey<FormState>();
   final AuthService _authService = AuthService();
   String _error = '';
@@ -59,11 +59,7 @@ class _AppSetUpPageState extends State<AppSetUpPage> {
                 height: height * 0.9,
                 width: width,
                 child: Padding(
-                  padding: const EdgeInsets.only(
-                    top: 0,
-                    left: 20,
-                    right: 20,
-                  ),
+                  padding: const EdgeInsets.only(top: 8.0, right: 20, left: 20),
                   child: Form(
                     key: _formKey,
                     child: Column(children: [
@@ -88,7 +84,7 @@ class _AppSetUpPageState extends State<AppSetUpPage> {
                             : null,
                         onChanged: (val) {
                           setState(() {
-                            _username = val;
+                            username = val;
                           });
                         },
                         decoration: InputDecoration(
@@ -110,7 +106,7 @@ class _AppSetUpPageState extends State<AppSetUpPage> {
                             val!.isEmpty ? "Enter a valid email" : null,
                         onChanged: (val) {
                           setState(() {
-                            _email = val;
+                            email = val;
                           });
                         },
                         decoration: InputDecoration(
@@ -133,7 +129,7 @@ class _AppSetUpPageState extends State<AppSetUpPage> {
                             : null,
                         onChanged: (val) {
                           setState(() {
-                            _password = val;
+                            password = val;
                           });
                         },
                         obscureText: _obscureText,
@@ -160,10 +156,6 @@ class _AppSetUpPageState extends State<AppSetUpPage> {
                             enabledBorder: UnderlineInputBorder(
                                 borderSide: BorderSide(color: Colors.white))),
                       ),
-                      // Text(
-                      //   _error,
-                      //   style: TextStyle(color: Colors.red, fontSize: 14),
-                      // ),
                       SizedBox(
                         height: 5,
                       ),
@@ -195,7 +187,7 @@ class _AppSetUpPageState extends State<AppSetUpPage> {
                         onPressed: () async {
                           dynamic result =
                               await _authService.registerWithEmailAndPassword(
-                                  _email, _password, _username);
+                                  email, password, username);
                           if (result == false) {
                             setState(() {
                               _error = 'Registration Failed';
@@ -214,7 +206,6 @@ class _AppSetUpPageState extends State<AppSetUpPage> {
                           ),
                         ),
                       ),
-
                       SizedBox(
                         height: 15,
                       ),
@@ -256,10 +247,9 @@ class _AppSetUpPageState extends State<AppSetUpPage> {
                       SizedBox(
                         height: 15,
                       ),
-
                       GestureDetector(
                         onTap: () {
-                          _authService.signInWithGoogle();
+                          _authService.signUpWithGoogle();
                         },
                         child: Container(
                           height: 50,
@@ -269,7 +259,9 @@ class _AppSetUpPageState extends State<AppSetUpPage> {
                               borderRadius: BorderRadius.circular(30)),
                           child: Row(children: [
                             Spacer(),
-                            // Image.asset(AppImages.google),
+                            Image.asset(
+                              AppImages.google,
+                            ),
                             SizedBox(
                               width: 10,
                             ),

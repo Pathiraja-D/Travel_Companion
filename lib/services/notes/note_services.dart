@@ -66,6 +66,31 @@ class NoteServices {
     }
   }
 
+  // get note list
+  Future<List<Note>> getNotesList() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection('Users')
+          .doc(_auth.currentUser!.uid)
+          .collection('Notes')
+          .orderBy('date', descending: true)
+          .get();
+
+      List<Note> notes = querySnapshot.docs
+          .map((doc) => Note(
+                noteId: doc['noteId'],
+                date: (doc['date'] as Timestamp).toDate(),
+                title: doc['title'],
+                colorId: doc['colorId'],
+              ))
+          .toList();
+      print(notes);
+      return notes;
+    } catch (e) {
+      print(e);
+      throw Exception('Error fetching notes');
+    }
+  }
   Future<Note> getOneNote(String Id) async {
     try {
       DocumentSnapshot<Map<String, dynamic>> querySnapshot = await _firestore

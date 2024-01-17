@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:travel_journal/config/app_routes.dart';
@@ -17,10 +19,24 @@ class NoteHomePage extends StatefulWidget {
 
 class _HomeScreenState extends State<NoteHomePage> {
   final AuthService _auth = AuthService();
-  NoteServices _noteServices = NoteServices();
-  final search = TextEditingController();
   NoteServices noteServices = NoteServices();
-  late Future<List<Note>> notesFuture = Future.value([]);
+  final search = TextEditingController();
+  final StreamController<List<Note>> _filteredNotesStreamController =
+      StreamController<List<Note>>.broadcast();
+  List<Note> notes = [];
+
+  void filterNotes(String query) {
+    List<Note> filteredNotes = notes
+        .where((note) => note.title.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+    _filteredNotesStreamController.sink.add(filteredNotes);
+  }
+
+  @override
+  void dispose() {
+    _filteredNotesStreamController.close();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -54,9 +70,8 @@ class _HomeScreenState extends State<NoteHomePage> {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                   
-                color: Colors.transparent,
-              ),
+                  color: Colors.transparent,
+                ),
                 height: height * 0.05,
                 width: height * 0.05,
                 child: Icon(Icons.notifications, color: Colors.white),
@@ -68,9 +83,10 @@ class _HomeScreenState extends State<NoteHomePage> {
           Column(children: [
             Padding(
               padding: const EdgeInsets.only(
-                top: 10.0, right: 10, left: 10, bottom: 5),
+                  top: 10.0, right: 10, left: 10, bottom: 5),
               child: TextFormField(
                 controller: search,
+                onChanged: (query) {},
                 decoration: InputDecoration(
                     hintText: "Search",
                     hintStyle: TextStyle(color: Colors.white),
@@ -88,7 +104,7 @@ class _HomeScreenState extends State<NoteHomePage> {
               child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: StreamBuilder<List<Note>>(
-                      stream: _noteServices.getNotesStream(),
+                      stream: noteServices.getNotesStream(),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           return ListView.builder(
@@ -107,7 +123,8 @@ class _HomeScreenState extends State<NoteHomePage> {
                                 );
                               });
                         } else {
-                          return Center(child: Text("No documents yet."));
+                          return CircularProgressIndicator(
+                              color: AppColors.mainColor);
                         }
                       })),
             ),
