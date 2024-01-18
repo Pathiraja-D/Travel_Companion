@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:travel_journal/components/app_colors.dart';
 import 'package:travel_journal/models/reminder.dart';
+import 'package:travel_journal/pages/home_navigator.dart';
 import 'package:travel_journal/services/Reminder/reminder_services.dart';
 
 class RemindersPage extends StatefulWidget {
@@ -37,7 +38,12 @@ class _RemindersPageState extends State<RemindersPage> {
             color: Colors.white,
             size: 25,
           ),
-          child: GestureDetector(onTap: () {}, child: Icon(Icons.arrow_back)),
+          child: GestureDetector(
+              onTap: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => HomeNavigator()));
+              },
+              child: Icon(Icons.arrow_back)),
         ),
         title: Center(
           child: const Text(
@@ -140,16 +146,16 @@ class _RemindersPageState extends State<RemindersPage> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text("Reminder Set!"),
-                      duration:
-                          Duration(seconds: 3), // Adjust the duration as needed
+                      duration: Duration(seconds: 3),
+                      backgroundColor: Colors.green,
                     ),
                   );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text("Description is Empty!"),
-                      duration:
-                          Duration(seconds: 3), // Adjust the duration as needed
+                      duration: Duration(seconds: 3),
+                      backgroundColor: Colors.red,
                     ),
                   );
                 }

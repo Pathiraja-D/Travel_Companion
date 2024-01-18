@@ -19,6 +19,7 @@ class _MapPageState extends State<MapPage> {
   String? accessToken = '1948';
   List<dynamic> listOfPlaces = [];
   var uuid = Uuid();
+  bool isListShowing = true;
 
   //var for display map
   TextEditingController search = TextEditingController();
@@ -156,83 +157,77 @@ class _MapPageState extends State<MapPage> {
           controller.complete(_controller);
         },
       ),
-      Container(
-        color: Colors.white,
-        height: height * 0.2,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                controller: search,
-                decoration: InputDecoration(
-                  filled: true,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10)),
-                  hintText: 'Search the place here',
-                  fillColor: Colors.transparent,
-                ),
-              ),
-            ),
-            Expanded(
-                child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(12)),
-              child: ListView.builder(
-                  itemCount: listOfPlaces.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      onTap: () async {
-                        selectedLocations = await locationFromAddress(
-                            listOfPlaces[index]['description']);
-
-                        await locateAnyLocation(
-                            selectedLocations!.last.latitude,
-                            selectedLocations!.last.longitude,
-                            selectedLocations.toString());
-
-                        print(selectedLocations!.last.longitude);
-                        print(selectedLocations!.last.latitude);
-                        setState(() {
-                          search = TextEditingController(
-                              text: listOfPlaces[index]['description']);
-                          locationInfo = listOfPlaces[index]['description'];
-                          listOfPlaces = [];
-                          selectedLocations = [];
-                        });
-                      },
-                      title: Text(listOfPlaces[index]['description']),
-                    );
-                  }),
-            )),
-          ],
-        ),
-      ),
       Positioned(
-        top: height * 0.7,
+        top: height * 0.8,
         left: 5,
         child: Container(
-          height: height * 0.2,
-          width: width * 0.2,
-          child: Column(children: [
-            FloatingActionButton(
-              child: Icon(Icons.location_searching),
-              onPressed: () async {
-                locateMyLocation();
-              },
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            FloatingActionButton(
-              child: Icon(Icons.add),
-              onPressed: () async {
-                addLocationToList();
-              },
-            ),
-          ]),
+          height: height * 0.07,
+          width: width * 0.15,
+          child: FloatingActionButton(
+            child: Icon(Icons.location_searching),
+            onPressed: () async {
+              locateMyLocation();
+            },
+          ),
         ),
-      )
+      ),
+      if (isListShowing) showList(),
     ])));
+  }
+
+  Widget showList() {
+    return Container(
+      color: Colors.white,
+      height: MediaQuery.of(context).size.height,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextFormField(
+              controller: search,
+              decoration: InputDecoration(
+                filled: true,
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                hintText: 'Search the place here',
+                fillColor: Colors.transparent,
+              ),
+            ),
+          ),
+          Expanded(
+              child: Container(
+            decoration: BoxDecoration(
+                color: Colors.white, borderRadius: BorderRadius.circular(12)),
+            child: ListView.builder(
+                itemCount: listOfPlaces.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    onTap: () async {
+                      selectedLocations = await locationFromAddress(
+                          listOfPlaces[index]['description']);
+
+                      await locateAnyLocation(
+                          selectedLocations!.last.latitude,
+                          selectedLocations!.last.longitude,
+                          selectedLocations.toString());
+
+                      print(selectedLocations!.last.longitude);
+                      print(selectedLocations!.last.latitude);
+                      setState(() {
+                        search = TextEditingController(
+                            text: listOfPlaces[index]['description']);
+                        locationInfo = listOfPlaces[index]['description'];
+                        listOfPlaces = [];
+                        selectedLocations = [];
+                        isListShowing = false;
+                      });
+                    },
+                    title: Text(listOfPlaces[index]['description']),
+                  );
+                }),
+          )),
+        ],
+      ),
+    );
   }
 }

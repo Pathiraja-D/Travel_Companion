@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:travel_journal/components/app_colors.dart';
+import 'package:travel_journal/config/app_images.dart';
 import 'package:weather/weather.dart';
 
 class WeatherPage extends StatefulWidget {
@@ -18,7 +20,7 @@ class _WeatherPageState extends State<WeatherPage> {
   @override
   void initState() {
     super.initState();
-    _fetchWeather('Kottawa');
+    _fetchWeather('');
   }
 
   void _fetchWeather(String cityName) {
@@ -33,10 +35,25 @@ class _WeatherPageState extends State<WeatherPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Short Weather"),
+          automaticallyImplyLeading: false,
+          backgroundColor: AppColors.mainColor,
+          elevation: 0.0,
+          title: Center(
+            child: Text("Weather",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold)),
+          ),
         ),
-        body: SingleChildScrollView(
-          child: _buildUI(),
+        body: ListView(
+          children: [
+            _locationHeader(),
+            SizedBox(
+              height: 10,
+            ),
+            _buildUI(),
+          ],
         ));
   }
 
@@ -50,96 +67,93 @@ class _WeatherPageState extends State<WeatherPage> {
       width: MediaQuery.sizeOf(context).width,
       height: MediaQuery.sizeOf(context).height,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
         children: [
-          Spacer(),
-          _locationHeader(),
-          SizedBox(
-            height: MediaQuery.sizeOf(context).height * 0.08,
+          Container(
+            height: MediaQuery.sizeOf(context).height * 0.8,
+            width: MediaQuery.sizeOf(context).width,
+            child: Column(
+              children: [
+                _datetimeInfo(),
+                SizedBox(
+                  height: MediaQuery.sizeOf(context).height * 0.03,
+                ),
+                _weatherIcon(),
+                _currentTemp(),
+                SizedBox(
+                  height: MediaQuery.sizeOf(context).height * 0.04,
+                ),
+                _extraInfo(),
+              ],
+            ),
           ),
-          _datetimeInfo(),
-          SizedBox(
-            height: MediaQuery.sizeOf(context).height * 0.05,
-          ),
-          _weatherIcon(),
-          SizedBox(
-            height: MediaQuery.sizeOf(context).height * 0.02,
-          ),
-          _currentTemp(),
-          SizedBox(
-            height: MediaQuery.sizeOf(context).height * 0.02,
-          ),
-          _extraInfo(),
-          Spacer(),
         ],
       ),
     );
   }
 
   Widget _locationHeader() {
-    return Column(
-      children: [
-        TextField(
-          decoration: InputDecoration(
-            labelText: 'Enter City Name',
-            suffixIcon: IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () {
-                _fetchWeather(cityname);
-                FocusScope.of(context).unfocus();
-              },
+    return Padding(
+      padding: const EdgeInsets.only(top: 10.0, right: 10, left: 10, bottom: 5),
+      child: TextField(
+        decoration: InputDecoration(
+          hintText: 'Enter City Name',
+          hintStyle: TextStyle(color: Colors.white),
+          suffixIcon: IconButton(
+            icon: Icon(
+              Icons.search,
+              color: Colors.white,
+              size: 30,
             ),
+            onPressed: () {
+              _fetchWeather(cityname);
+            },
           ),
-          onChanged: (value) {
-            cityname = value;
-          },
-          onSubmitted: (value) {
-            _fetchWeather(value);
-            FocusScope.of(context).unfocus();
-          },
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide.none),
+          contentPadding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+          filled: true,
+          fillColor: Colors.black.withOpacity(0.2),
         ),
-        Text(
-          _weather?.areaName ?? "",
-          style: TextStyle(fontSize: 20),
-        ),
-      ],
+        onChanged: (value) {
+          cityname = value;
+        },
+        onSubmitted: (value) {
+          _fetchWeather(value);
+        },
+      ),
     );
   }
 
   Widget _datetimeInfo() {
-    DateTime now = _weather!.date!;
     return Column(
       children: [
+        SizedBox(
+          height: 20,
+        ),
         Text(
-          DateFormat("hh:mm a").format(now),
+          _weather?.areaName ?? "",
           style: TextStyle(
-            fontSize: 35,
+            fontSize: 30,
+            fontWeight: FontWeight.w800,
+            color: Colors.black,
           ),
         ),
         SizedBox(
-          height: 10,
+          height: 20,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Text(
-              DateFormat("EEEE").format(now),
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            Text(
-              "${DateFormat(" d.m.y").format(now)}",
-              style: TextStyle(
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ],
-        )
+        Text(
+          //
+          getCurrentTime(),
+          style: TextStyle(
+              fontSize: 35, fontWeight: FontWeight.w800, color: Colors.black),
+        ),
+        Text(
+          //
+          getCurrentDate(),
+          style: TextStyle(
+              fontSize: 15, fontWeight: FontWeight.w400, color: Colors.black),
+        ),
       ],
     );
   }
@@ -152,16 +166,20 @@ class _WeatherPageState extends State<WeatherPage> {
       children: [
         Container(
           height: MediaQuery.sizeOf(context).height * 0.2,
+          width: MediaQuery.sizeOf(context).width * 0.5,
           decoration: BoxDecoration(
+              border: Border.all(color: Colors.black, width: 1),
               image: DecorationImage(
-                  image: NetworkImage(
-                      "http://openweathermap.org/img/wn/${_weather?.weatherIcon}@4x.png"))),
+                image: NetworkImage(
+                    "http://openweathermap.org/img/wn/${_weather?.weatherIcon}@4x.png"),
+              ),
+              borderRadius: BorderRadius.circular(20)),
         ),
         Text(
           _weather?.weatherDescription ?? "",
           style: const TextStyle(
             color: Colors.black,
-            fontSize: 20,
+            fontSize: 25,
           ),
         ),
       ],
@@ -169,42 +187,80 @@ class _WeatherPageState extends State<WeatherPage> {
   }
 
   Widget _currentTemp() {
-    return Text("${_weather?.temperature?.celsius?.toStringAsFixed(2)}°C");
+    return Text("${_weather?.temperature?.celsius?.toStringAsFixed(2)}°C",
+        style: TextStyle(
+            fontSize: 50, fontWeight: FontWeight.w800, color: Colors.black));
   }
 
   Widget _extraInfo() {
-    return Container(
-      height: MediaQuery.sizeOf(context).height * 0.15,
-      width: MediaQuery.sizeOf(context).width * 0.80,
-      decoration: BoxDecoration(
-        color: Colors.grey[300],
-        borderRadius: BorderRadius.circular(10),
-      ),
-      padding: EdgeInsets.all(8),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text("Max: ${_weather?.tempMax?.celsius?.toStringAsFixed(2)} °C"),
-              Text("Min: ${_weather?.tempMin?.celsius?.toStringAsFixed(2)} °C"),
-            ],
-          ),
-          Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text("Wind: ${_weather?.windSpeed?.toStringAsFixed(2)} m/s"),
-              Text("Humidity: ${_weather?.humidity?.toStringAsFixed(2)} %"),
-            ],
-          )
-        ],
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Spacer(),
+            Column(
+              children: [
+                Image.asset(AppImages.pressure, height: 30, width: 30),
+                SizedBox(height: 8),
+                Text("${_weather?.pressure?.toStringAsFixed(2)} P"),
+              ],
+            ),
+            Spacer(),
+            Container(
+              height: 50, // Adjust the height of the vertical line
+              width: 2, // Adjust the width of the vertical line
+              color: Colors.grey, // Adjust the color of the vertical line
+            ),
+            Spacer(),
+            Column(
+              children: [
+                Image.asset(AppImages.wind,
+                    height: 30, width: 30), // Replace with your image asset
+                SizedBox(
+                    height: 8), // Adjust the spacing between image and text
+                Text("${_weather?.windSpeed?.toStringAsFixed(2)} m/s"),
+              ],
+            ),
+            Spacer(),
+            Container(
+              height: 50, // Adjust the height of the vertical line
+              width: 1, // Adjust the width of the vertical line
+              color: Colors.grey, // Adjust the color of the vertical line
+            ),
+            Spacer(),
+            Column(
+              children: [
+                Image.asset(AppImages.humidity,
+                    height: 30, width: 30), // Replace with your image
+                // Replace with your image asset
+                SizedBox(
+                    height: 8), // Adjust the spacing between image and text
+                Text(
+                  "${_weather?.humidity?.toStringAsFixed(2)} %",
+                ),
+              ],
+            ),
+            Spacer(),
+          ],
+        )
+      ],
     );
+  }
+
+  String getCurrentTime() {
+    var now = DateTime.now();
+    var formatter = DateFormat('h:mm a');
+    return formatter.format(now);
+  }
+
+  String getCurrentDate() {
+    var now = DateTime.now();
+    var formatter = DateFormat('EEEE, MMMM d, y');
+    return formatter.format(now);
   }
 }

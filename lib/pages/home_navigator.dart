@@ -1,4 +1,3 @@
-
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_journal/components/app_colors.dart';
@@ -16,7 +15,6 @@ class HomeNavigator extends StatefulWidget {
 }
 
 class _HomeNavigatorState extends State<HomeNavigator> {
-
   int index = 0;
   final pages = [
     NoteHomePage(),
@@ -25,7 +23,6 @@ class _HomeNavigatorState extends State<HomeNavigator> {
     MapPage(),
     ProfilePage(),
   ];
-  
 
   @override
   void initState() {
@@ -71,7 +68,7 @@ class _HomeNavigatorState extends State<HomeNavigator> {
             color: AppColors.mainColor, //Navigation bar Color change
             buttonBackgroundColor:
                 AppColors.mainColor, //change the selected background color
-            backgroundColor: Colors.transparent,
+            backgroundColor: Colors.white,
             index: index,
             animationCurve:
                 Curves.easeInOut, //Thransition duration change in here
@@ -84,8 +81,6 @@ class _HomeNavigatorState extends State<HomeNavigator> {
             }),
           ),
         ),
-
-        
       ),
     );
   }

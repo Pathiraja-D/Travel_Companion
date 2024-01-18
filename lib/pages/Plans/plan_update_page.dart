@@ -52,7 +52,7 @@ class _PlanAddPageState extends State<PlanUpdatePage> {
     double height = MediaQuery.of(context).size.height;
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: AppColors.notePlan,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0.0,
         leading: IconTheme(
@@ -73,7 +73,7 @@ class _PlanAddPageState extends State<PlanUpdatePage> {
         title: Text("Journey Plan",
             style: TextStyle(
                 color: Colors.white,
-                fontSize: 25,
+                fontSize: 20,
                 fontWeight: FontWeight.normal)),
         actions: [
           IconButton(
@@ -96,7 +96,9 @@ class _PlanAddPageState extends State<PlanUpdatePage> {
             key: formKey,
             child: Column(
               children: [
-                Spacer(),
+                SizedBox(
+                  height: 10,
+                ),
                 Container(
                   child: Padding(
                     padding: const EdgeInsets.only(
@@ -109,7 +111,11 @@ class _PlanAddPageState extends State<PlanUpdatePage> {
                         ),
                         Text(
                           "Created Date:${plan?[0].date.day}/${plan?[0].date.month}/${plan?[0].date.year}   Created Time:${plan?[0].date.hour}:${plan?[0].date.minute}",
-                          style: TextStyle(color: Colors.black, fontSize: 13),
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         Container(
                           height: 1, // Height of the line
@@ -120,14 +126,18 @@ class _PlanAddPageState extends State<PlanUpdatePage> {
                         ),
                         Text(
                           "Title",
-                          style: TextStyle(color: Colors.black, fontSize: 20),
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         TextFormField(
                             controller: titlecontroller,
                             enabled: isEdditingEnabled,
                             style: TextStyle(
                               color: Colors.black,
-                              fontSize: 20,
+                              fontSize: 15,
                             ),
                             minLines: 1,
                             maxLines: 3,
@@ -145,14 +155,18 @@ class _PlanAddPageState extends State<PlanUpdatePage> {
                         ),
                         Text(
                           "Journey Plan",
-                          style: TextStyle(color: Colors.black, fontSize: 20),
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         TextFormField(
                           controller: descriptioncontroller,
                           enabled: isEdditingEnabled,
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 20,
+                            fontSize: 15,
                           ),
                           minLines: 1,
                           maxLines: null,
@@ -170,14 +184,18 @@ class _PlanAddPageState extends State<PlanUpdatePage> {
                         ),
                         Text(
                           "Saved Locations",
-                          style: TextStyle(color: Colors.black, fontSize: 20),
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         TextFormField(
                           controller: locationcontroller,
                           enabled: isEdditingEnabled,
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 20,
+                            fontSize: 15,
                           ),
                           minLines: 1,
                           maxLines: null,
@@ -284,4 +302,3 @@ class _PlanAddPageState extends State<PlanUpdatePage> {
     );
   }
 }
-

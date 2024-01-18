@@ -184,26 +184,6 @@ class _AppSetUpPageState extends State<ProfilePage> {
                   SizedBox(
                     height: 80,
                   ),
-                  SizedBox(
-                    height: 40,
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        fixedSize: Size(width * 0.8, 60),
-                        backgroundColor: AppColors.mainColor),
-                    onPressed: () async {
-                      SaveImage(_image?.path);
-                    },
-                    child: Center(
-                      child: Text(
-                        "Update",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -217,7 +197,6 @@ class _AppSetUpPageState extends State<ProfilePage> {
     final imagePicker = ImagePicker();
     final pickedImage =
         await imagePicker.pickImage(source: ImageSource.gallery);
-    await SaveImage(path);
 
     if (pickedImage != null) {
       setState(() {

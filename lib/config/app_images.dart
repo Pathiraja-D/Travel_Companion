@@ -11,6 +11,9 @@ class AppImages {
   static const loginback = '${_img}testback.png';
   static const registrationback = '${_img}registration_back.png';
   static const profilepic='${_img}Profile.jpg';
+  static const wind='${_img}wind.png';
+  static const pressure='${_img}pressure.png';
+  static const humidity='${_img}humidity.png';
 
   //svg
   static const doublearrow = '${_svg}doublearrow.svg';

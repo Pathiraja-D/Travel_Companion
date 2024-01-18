@@ -4,6 +4,7 @@ import 'package:travel_journal/components/app_colors.dart';
 import 'package:travel_journal/models/journey.dart';
 import 'package:travel_journal/models/note_model.dart';
 import 'package:travel_journal/pages/Plans/plan_update_page.dart';
+import 'package:travel_journal/pages/home_navigator.dart';
 import 'package:travel_journal/services/journey/journey_services.dart';
 
 class JourneyUpdatePage extends StatefulWidget {
@@ -55,20 +56,27 @@ class _JourneyPageState extends State<JourneyUpdatePage> {
     double width = MediaQuery.of(context).size.width;
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.grey[500],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0.0,
-        leading: IconTheme(
-          data: IconThemeData(
-            color: Colors.white,
-            size: 25,
+        leading: Container(
+          child: IconTheme(
+            data: IconThemeData(
+              color: Colors.white,
+              size: 25,
+            ),
+            child: GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => HomeNavigator()));
+                },
+                child: Icon(Icons.arrow_back)),
           ),
-          child: GestureDetector(onTap: () {}, child: Icon(Icons.arrow_back)),
         ),
         title: Text("Journey memories",
             style: TextStyle(
                 color: Colors.white,
-                fontSize: 25,
+                fontSize: 20,
                 fontWeight: FontWeight.normal)),
         actions: [
           IconButton(
@@ -120,8 +128,11 @@ class _JourneyPageState extends State<JourneyUpdatePage> {
                         height: 10,
                       ),
                       Text(
-                        "Date:${journey?[0].date.day}/${journey?[0].date.month}/${journey?[0].date.year}  Time:${journey?[0].date.hour}:${journey?[0].date.minute}",
-                        style: TextStyle(color: Colors.black, fontSize: 13),
+                        "Created Date:${journey?[0].date.day}/${journey?[0].date.month}/${journey?[0].date.year}   Created Time:${journey?[0].date.hour}:${journey?[0].date.minute}",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold),
                       ),
                       Container(
                         height: 1, // Height of the line
@@ -132,14 +143,17 @@ class _JourneyPageState extends State<JourneyUpdatePage> {
                       ),
                       Text(
                         "Title",
-                        style: TextStyle(color: Colors.black, fontSize: 20),
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15),
                       ),
                       TextFormField(
                         enabled: isEdditingEnabled,
                         controller: titlecontroller,
                         style: TextStyle(
                           color: Colors.black,
-                          fontSize: 20,
+                          fontSize: 15,
                         ),
                         minLines: 1,
                         maxLines: 3,
@@ -156,14 +170,18 @@ class _JourneyPageState extends State<JourneyUpdatePage> {
                       ),
                       Text(
                         "Journey Details",
-                        style: TextStyle(color: Colors.black, fontSize: 20),
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       TextFormField(
                         enabled: isEdditingEnabled,
                         controller: descriptioncontroller,
                         style: TextStyle(
                           color: Colors.black,
-                          fontSize: 20,
+                          fontSize: 15,
                         ),
                         minLines: 1,
                         maxLines: null,
@@ -181,14 +199,18 @@ class _JourneyPageState extends State<JourneyUpdatePage> {
                       ),
                       Text(
                         "Saved Locations",
-                        style: TextStyle(color: Colors.black, fontSize: 20),
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       TextFormField(
                         enabled: isEdditingEnabled,
                         controller: locationcontroller,
                         style: TextStyle(
                           color: Colors.black,
-                          fontSize: 20,
+                          fontSize: 15,
                         ),
                         minLines: 1,
                         maxLines: null,
