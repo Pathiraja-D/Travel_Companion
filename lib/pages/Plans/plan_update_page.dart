@@ -60,15 +60,17 @@ class _PlanAddPageState extends State<PlanUpdatePage> {
             color: Colors.white,
             size: 25,
           ),
-          child: GestureDetector(
-              onTap: () async {
-                await Navigator.of(context).push(
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          JourneyUpdatePage(note: widget.note)),
-                );
-              },
-              child: Icon(Icons.arrow_back)),
+          child: Container(
+            child: GestureDetector(
+                onTap: () async {
+                  await Navigator.of(context).push(
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            JourneyUpdatePage(note: widget.note)),
+                  );
+                },
+                child: Icon(Icons.arrow_back)),
+          ),
         ),
         title: Text("Journey Plan",
             style: TextStyle(

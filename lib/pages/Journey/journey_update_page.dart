@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_journal/components/app_colors.dart';
 import 'package:travel_journal/models/journey.dart';
@@ -17,6 +21,11 @@ class JourneyUpdatePage extends StatefulWidget {
 
 class _JourneyPageState extends State<JourneyUpdatePage> {
   List<String> imagepaths = [];
+  late List<PlatformFile> pickedFiles;
+  PlatformFile? pickedFile;
+  UploadTask? uploadTask;
+  List<String> imagesList = [];
+  List<String> downloadURLs = [];
   JourneyServices? journeyServices;
   List<Journey>? journey;
   TextEditingController titlecontroller = TextEditingController();
@@ -59,12 +68,12 @@ class _JourneyPageState extends State<JourneyUpdatePage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0.0,
-        leading: Container(
-          child: IconTheme(
-            data: IconThemeData(
-              color: Colors.white,
-              size: 25,
-            ),
+        leading: IconTheme(
+          data: IconThemeData(
+            color: Colors.white,
+            size: 25,
+          ),
+          child: Container(
             child: GestureDetector(
                 onTap: () {
                   Navigator.of(context).push(
@@ -76,7 +85,7 @@ class _JourneyPageState extends State<JourneyUpdatePage> {
         title: Text("Journey memories",
             style: TextStyle(
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: 25,
                 fontWeight: FontWeight.normal)),
         actions: [
           IconButton(
@@ -98,26 +107,59 @@ class _JourneyPageState extends State<JourneyUpdatePage> {
           key: formKey,
           child: ListView(
             children: [
-              Container(
-                height: height * 0.3,
-                width: width,
-                child: CarouselSlider.builder(
-                  options: CarouselOptions(
-                    height: 400.0,
-                    autoPlay: true,
-                    viewportFraction: 1,
-                    enableInfiniteScroll: false,
-                    reverse: true,
-                    autoPlayInterval: Duration(seconds: 2),
-                  ),
-                  itemCount: imagepaths.length,
-                  itemBuilder: (context, index, realIndex) {
-                    final imageURL = imagepaths[index];
+              Stack(children: [
+                Padding(
+                  padding: const EdgeInsets.all(3.0),
+                  child: Container(
+                    height: height * 0.35,
+                    width: width,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black, width: 2),
+                      borderRadius: BorderRadius.circular(0),
+                    ),
+                    child: CarouselSlider.builder(
+                      options: CarouselOptions(
+                        height: 400.0,
+                        autoPlay: true,
+                        viewportFraction: 1,
+                        enableInfiniteScroll: false,
+                        reverse: true,
+                        autoPlayInterval: Duration(seconds: 2),
+                      ),
+                      itemCount: imagepaths.length,
+                      itemBuilder: (context, index, realIndex) {
+                        final imageURL = imagepaths[index];
 
-                    return buildImages(imagepaths[index], index);
-                  },
+                        return buildImages(imagepaths[index], index);
+                      },
+                    ),
+                  ),
                 ),
-              ),
+                Positioned(
+                  bottom: 10,
+                  right: 10,
+                  child: FloatingActionButton(
+                    onPressed: () async {
+                      await pickImages();
+                      await uploadImages(widget.note!.noteId);
+                      bool isUpload = await journeyServices!
+                          .updateJourneyImageURLs(
+                              downloadURLs, widget.note!.noteId);
+                      if (isUpload) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Images Uploaded Successfully"),
+                            duration: Duration(seconds: 3),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      }
+                    },
+                    child: Icon(Icons.upload),
+                  ),
+                ),
+              ]),
+              buildProgress(),
               Container(
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
@@ -128,11 +170,12 @@ class _JourneyPageState extends State<JourneyUpdatePage> {
                         height: 10,
                       ),
                       Text(
-                        "Created Date:${journey?[0].date.day}/${journey?[0].date.month}/${journey?[0].date.year}   Created Time:${journey?[0].date.hour}:${journey?[0].date.minute}",
+                        "Date:${journey?[0].date.day}/${journey?[0].date.month}/${journey?[0].date.year}  Time:${journey?[0].date.hour}:${journey?[0].date.minute}",
                         style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold),
+                          color: Colors.black,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       Container(
                         height: 1, // Height of the line
@@ -144,9 +187,10 @@ class _JourneyPageState extends State<JourneyUpdatePage> {
                       Text(
                         "Title",
                         style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15),
+                          color: Colors.black,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       TextFormField(
                         enabled: isEdditingEnabled,
@@ -322,4 +366,91 @@ class _JourneyPageState extends State<JourneyUpdatePage> {
           fit: BoxFit.cover,
         ),
       );
+
+  Widget buildProgress() => StreamBuilder<TaskSnapshot>(
+      stream: uploadTask?.snapshotEvents,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final data = snapshot.data;
+          double progress = data!.bytesTransferred / data.totalBytes;
+          return SizedBox(
+            height: 30,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                LinearProgressIndicator(
+                  value: progress,
+                  backgroundColor: Colors.grey,
+                  color: Colors.green,
+                ),
+                Center(
+                  child: Text(
+                    '${(progress * 100).toStringAsFixed(2)} % ',
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                  ),
+                )
+              ],
+            ),
+          );
+        } else {
+          return SizedBox(
+            child: Text(""),
+          );
+        }
+      });
+
+  Future pickImages() async {
+    List<File> files = [];
+    try {
+      final result = await FilePicker.platform
+          .pickFiles(allowMultiple: true, type: FileType.image);
+      if (result != null) {
+        setState(() {
+          pickedFiles = result.files;
+          files = pickedFiles.map((file) => File(file.path!)).toList();
+          imagesList = files.map((file) => file.path).toList();
+        });
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print("Error picking images: $e");
+      return null;
+    }
+  }
+
+  Future<bool> uploadImages(String noteId) async {
+    try {
+      for (var pickedFile in pickedFiles) {
+        final path = '$noteId/${pickedFile.name}';
+
+        final file = File(pickedFile.path!);
+        final ref = FirebaseStorage.instance.ref(path);
+        final uploadTask = ref.putFile(file);
+
+        setState(() {
+          this.uploadTask = uploadTask;
+        });
+
+        await uploadTask.whenComplete(() {});
+
+        final urlDownload = await ref.getDownloadURL();
+
+        setState(() {
+          downloadURLs.add(urlDownload);
+          imagepaths.add(urlDownload);
+          this.uploadTask = null; // Reset uploadTask when upload is completed
+        });
+      }
+
+      print('Download URLs: $downloadURLs');
+      return true;
+    } catch (e) {
+      setState(() {
+        this.uploadTask = null; // Reset uploadTask on error
+      });
+      print('Error uploading images: $e');
+      return false;
+    }
+  }
 }

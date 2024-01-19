@@ -30,10 +30,28 @@ class AuthService {
     }
   }
 
+  //update profile image url
+  Future<bool> updateProfileImageUrl(String url) async {
+    try {
+      await _firestore
+          .collection('Users')
+          .doc(_auth.currentUser!.uid)
+          .update({'profilePictureUrl': url});
+      print("Url updated");
+      return true;
+    } catch (e) {
+      print(e.toString());
+      return false;
+    }
+  }
+
   //Sign out
   Future<bool> signOut() async {
     try {
       await _auth.signOut();
+      if (googleSignIn.currentUser != null) {
+        await googleSignIn.signOut();
+      }
       print("Sign out");
       return true;
     } catch (e) {
@@ -64,12 +82,14 @@ class AuthService {
       final UserCredential result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       final User? user = result.user;
-      FireStoreUser userWithCredentials =
-          FireStoreUser(uid: user!.uid, email: email, username: username);
+      FireStoreUser userWithCredentials = FireStoreUser(
+          uid: user!.uid,
+          email: email,
+          username: username,
+          profilePictureUrl: "");
       bool userCreatedInFirestore =
           await createUserInUsersCollection(userWithCredentials);
-      //await SharedPreferenceService().saveUserEmail(email);
-      //await SharedPreferenceService().saveUserId(user!.uid);
+
       if (userCreatedInFirestore) {
         return _userWithFirebaseUserUid(user);
       } else {
@@ -88,6 +108,7 @@ class AuthService {
         'email': fireStoreUser.email,
         'id': _auth.currentUser!.uid,
         'username': fireStoreUser.username,
+        'profilePictureUrl': fireStoreUser.profilePictureUrl,
       });
       return true;
     } catch (e) {
@@ -106,12 +127,13 @@ class AuthService {
 
       if (querySnapshot.exists) {
         FireStoreUser user = FireStoreUser(
-            email: querySnapshot['email'],
-            username: querySnapshot['username'],
-            uid: querySnapshot['id']
+          email: querySnapshot['email'],
+          username: querySnapshot['username'],
+          uid: querySnapshot['id'],
+          profilePictureUrl: querySnapshot['profilePictureUrl'],
 
-            // Add other fields according to your Note model
-            );
+          // Add other fields according to your Note model
+        );
         return user;
       } else {
         // Document with the provided ID does not exist
@@ -124,15 +146,15 @@ class AuthService {
     }
   }
 
-  //gmail signup
-  Future<bool> signUpWithGoogle() async {
+  //gmail signUp
+  Future<String> signUpWithGoogle() async {
     try {
       final GoogleSignInAccount? googleSignInAccount =
           await googleSignIn.signIn();
 
       if (googleSignInAccount == null) {
         // Handle the case where Google Sign-In was canceled or failed.
-        return false;
+        return "SignInFailed";
       }
 
       final GoogleSignInAuthentication googleSignInAuthentication =
@@ -148,49 +170,52 @@ class AuthService {
 
       if (userDetails == null) {
         // Handle the case where user details are null.
-        return false;
+        return "UserNull";
       }
 
-      bool gmailUserCreatedInFirestore = await createUserInUsersCollection(
-        FireStoreUser(
-          uid: userDetails.uid,
-          email: userDetails.email,
-          username: userDetails.displayName,
-        ),
-      );
+      final userAlreadyExists =
+          await getFireStoreUserFromEmail(userDetails.email!);
 
-      return gmailUserCreatedInFirestore;
-    } catch (error) {
+      if (userAlreadyExists == 2) {
+        await createUserInUsersCollection(
+          FireStoreUser(
+            uid: userDetails.uid,
+            email: userDetails.email,
+            username: userDetails.displayName,
+            profilePictureUrl: "",
+          ),
+        );
+        print("User created");
+      }
+
+      return "SignInSuccessfull";
+    } catch (error, stackTrace) {
       print("Error during Google Sign-In: $error");
-      return false;
+      print("Stack trace: $stackTrace");
+      return "UnknownError";
     }
   }
 
-  Future<User?> signInWithGoogle() async {
+  Future<int> getFireStoreUserFromEmail(String email) async {
     try {
-      final GoogleSignInAccount? googleSignInAccount =
-          await googleSignIn.signIn();
+      QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
+          .collection('Users')
+          .where('email', isEqualTo: email)
+          .limit(1) // Limit the result to one document
+          .get();
 
-      if (googleSignInAccount == null) {
-        return null; // User canceled Google Sign-In
+      if (querySnapshot.size > 0) {
+        // A document with the provided email exists
+
+        return 1;
+      } else {
+        // Document with the provided email does not exist
+        return 2;
       }
-
-      final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount.authentication;
-
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthentication.accessToken,
-        idToken: googleSignInAuthentication.idToken,
-      );
-
-      final UserCredential authResult =
-          await _auth.signInWithCredential(credential);
-
-      final User? user = authResult.user;
-      return user;
-    } catch (error) {
-      print('Google Sign-In Error: $error');
-      return null;
+    } catch (e) {
+      // Handle any potential errors
+      print(e);
+      return 0;
     }
   }
 }

@@ -1,4 +1,5 @@
 
+import 'package:travel_journal/pages/Autheticate/forgot_password_page.dart';
 import 'package:travel_journal/pages/Reminder/reminder_page.dart';
 import 'package:travel_journal/pages/Start/app_start_page.dart';
 import 'package:travel_journal/pages/Autheticate/login_page.dart';
@@ -22,6 +23,7 @@ class AppRoutes {
     weatherpage: (context) => const WeatherPage(),
     reminderspage: (context) => const RemindersPage(),
     homenavigation: (context) => const HomeNavigator(),
+    forgotPassword:(context) => const ForgotPassword(),
   };
 
   static const start = '/';
@@ -34,4 +36,5 @@ class AppRoutes {
   static const weatherpage = '/weatherpage';
   static const reminderspage = '/reminderspage';
   static const homenavigation = '/homenavigator';
+  static const forgotPassword = '/forgotPassword';
 }

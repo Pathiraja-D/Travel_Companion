@@ -18,6 +18,17 @@ class MapServices {
     return convertedAddress;
   }
 
+  Future<String> getCityFromCoordinates(
+      double latitude, double longitude) async {
+    String cityName = "";
+    List<Placemark> placemarks =
+        await placemarkFromCoordinates(latitude, longitude);
+    Placemark place = placemarks[0];
+    cityName = "${place.administrativeArea}";
+    
+    return cityName;
+  }
+
   //conversion of address to coordinates
   Future<List<Location>> getCoordinatesFromAddress(String address) async {
     List<Location> locations = await locationFromAddress(address);
@@ -36,5 +47,4 @@ class MapServices {
     return await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
   }
-
 }

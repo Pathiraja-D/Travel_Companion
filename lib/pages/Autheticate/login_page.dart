@@ -134,7 +134,8 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              ForgotPassword();
+                              Navigator.of(context)
+                                  .pushNamed(AppRoutes.forgotPassword);
                             },
                             child: Text(
                               "Forgot Password?",
@@ -162,7 +163,7 @@ class _LoginPageState extends State<LoginPage> {
                         ],
                       ),
                       SizedBox(
-                        height: 30,
+                        height: 80,
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -196,39 +197,6 @@ class _LoginPageState extends State<LoginPage> {
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold),
                           ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      GestureDetector(
-                        onTap: () async {
-                          await _auth.signInWithGoogle();
-                        },
-                        child: Container(
-                          height: 40,
-                          width: width * 0.7,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20)),
-                          child: Row(children: [
-                            Spacer(),
-                            Image.asset(AppImages.google),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              "Login with gmail",
-                              style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Spacer(),
-                          ]),
                         ),
                       ),
                       Spacer(),

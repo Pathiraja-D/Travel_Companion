@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:travel_journal/config/app_images.dart';
+import 'package:travel_journal/config/app_routes.dart';
 import 'package:travel_journal/pages/home_navigator.dart';
 import 'package:travel_journal/services/auth/auth.dart';
 
@@ -17,13 +18,12 @@ class AppSetUpPage extends StatefulWidget {
 
 class _AppSetUpPageState extends State<AppSetUpPage> {
   bool _obscureText = true;
-  final bool _isSigning = false;
+
   String username = '';
   String email = '';
   String password = '';
-  final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final AuthService _authService = AuthService();
-  String _error = '';
 
   @override
   Widget build(BuildContext context) {
@@ -185,15 +185,24 @@ class _AppSetUpPageState extends State<AppSetUpPage> {
                             fixedSize: Size(width, 50),
                             backgroundColor: Colors.amber),
                         onPressed: () async {
-                          dynamic result =
-                              await _authService.registerWithEmailAndPassword(
-                                  email, password, username);
-                          if (result == false) {
-                            setState(() {
-                              _error = 'Registration Failed';
-                            });
-                          } else {
-                            HomeNavigator();
+                          if (_formKey.currentState!.validate()) {
+                            dynamic result =
+                                await _authService.registerWithEmailAndPassword(
+                                    email, password, username);
+                            if (result == false) {
+                              setState(() {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text("Sign in failed"),
+                                    duration: Duration(seconds: 2),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              });
+                            } else {
+                              Navigator.of(context).pushReplacementNamed(
+                                  AppRoutes.homenavigation);
+                            }
                           }
                         },
                         child: Center(
@@ -214,8 +223,7 @@ class _AppSetUpPageState extends State<AppSetUpPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SizedBox(
-                              width:
-                                  30, // Adjust this value to change the length of the lines
+                              width: 30,
                               child: Container(
                                 height: 1,
                                 color: Colors.white,
@@ -248,8 +256,31 @@ class _AppSetUpPageState extends State<AppSetUpPage> {
                         height: 15,
                       ),
                       GestureDetector(
-                        onTap: () {
-                          _authService.signUpWithGoogle();
+                        onTap: () async {
+                          String accoutCreated =
+                              await _authService.signUpWithGoogle();
+
+                          if (accoutCreated == "SignInSuccessfull") {
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (context) => HomeNavigator()));
+                          } else if (accoutCreated == "SignInFailed") {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Sign in failed"),
+                                duration: Duration(seconds: 2),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Unknown error"),
+                                duration: Duration(seconds: 2),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                         },
                         child: Container(
                           height: 50,

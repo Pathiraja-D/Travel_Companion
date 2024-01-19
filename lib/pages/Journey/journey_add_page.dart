@@ -34,7 +34,7 @@ class _JourneyPageState extends State<JourneyAddPage> {
   // TextEditingController locationcontroller = TextEditingController();
   bool addingFinish = true;
   String journeyCreated = "";
-  var formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   JourneyServices journeyServices = JourneyServices();
   NoteServices noteServices = NoteServices();
   bool isButtonDisabled = false;
@@ -152,8 +152,8 @@ class _JourneyPageState extends State<JourneyAddPage> {
                       ),
                     ),
                     TextFormField(
-                      validator: (val) => val!.length < 6
-                          ? "Please enter a title before plan a journey"
+                      validator: (val) => val!.trim().isEmpty
+                          ? "Journey should have a name"
                           : null,
                       onChanged: (val) {
                         setState(() {
@@ -188,9 +188,6 @@ class _JourneyPageState extends State<JourneyAddPage> {
                       ),
                     ),
                     TextFormField(
-                      validator: (val) => val!.length < 6
-                          ? "Please enter a title before plan a journey"
-                          : null,
                       onChanged: (val) {
                         setState(() {
                           description = val;
@@ -223,9 +220,6 @@ class _JourneyPageState extends State<JourneyAddPage> {
                       ),
                     ),
                     TextFormField(
-                      validator: (val) => val!.length < 6
-                          ? "Please enter a title before plan a journey"
-                          : null,
                       onChanged: (val) {
                         setState(() {
                           locations = val;
@@ -257,44 +251,46 @@ class _JourneyPageState extends State<JourneyAddPage> {
                         child: ElevatedButton(
                             onPressed: () async {
                               // Disable the button to prevent multiple presses
-                              if (isButtonDisabled) {
-                                return;
-                              }
-
-                              setState(() {
-                                isButtonDisabled = true;
-                              });
-
-                              try {
-                                journeyCreated = await journeyServices
-                                    .createJourneyInJourneyCollection(title,
-                                        description, locations, downloadURLs);
-
-                                note = await noteServices
-                                    .getOneNote(journeyCreated);
-                                await uploadImages(note!.noteId);
-
-                                if (journeyCreated.isNotEmpty &&
-                                    downloadURLs.isNotEmpty) {
-                                  await journeyServices.updateJourneyImageURLs(
-                                      downloadURLs, journeyCreated);
-                                  setState(() {
-                                    addingFinish = false;
-                                  });
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content:
-                                          Text("Journey Added Successfully"),
-                                      duration: Duration(seconds: 3),
-                                      backgroundColor: Colors.green,
-                                    ),
-                                  );
-                                }
-                              } finally {
-                                // Enable the button back after the process is completed or an error occurs
+                              if (formKey.currentState!.validate()) {
                                 setState(() {
-                                  isButtonDisabled = false;
+                                  isButtonDisabled = true;
                                 });
+
+                                try {
+                                  journeyCreated = await journeyServices
+                                      .createJourneyInJourneyCollection(title,
+                                          description, locations, downloadURLs);
+
+                                  note = await noteServices
+                                      .getOneNote(journeyCreated);
+                                  await uploadImages(note!.noteId);
+
+                                  if (journeyCreated.isNotEmpty &&
+                                      downloadURLs.isNotEmpty) {
+                                    await journeyServices
+                                        .updateJourneyImageURLs(
+                                            downloadURLs, journeyCreated);
+                                    setState(() {
+                                      addingFinish = false;
+                                    });
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content:
+                                            Text("Journey Added Successfully"),
+                                        duration: Duration(seconds: 3),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                  }
+                                } finally {
+                                  setState(() {
+                                    isButtonDisabled = false;
+                                    addingFinish = false;
+                                    imagesList = [];
+                                    downloadURLs = [];
+                                    pickedFiles = [];
+                                  });
+                                }
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -345,7 +341,7 @@ class _JourneyPageState extends State<JourneyAddPage> {
                 ),
                 Center(
                   child: Text(
-                    '${(progress * 100).toStringAsFixed(2)} % ',
+                    'Uploading ${(progress * 100).toStringAsFixed(2)} % ',
                     style: TextStyle(fontSize: 20, color: Colors.white),
                   ),
                 )
@@ -413,53 +409,3 @@ class _JourneyPageState extends State<JourneyAddPage> {
     }
   }
 }
-//  Container(
-                        //   height: height * 0.05,
-                        //   width: width * 0.6,
-                        //   child: ElevatedButton(
-                        //       onPressed: () async {
-                        //         if (note!.noteId.isNotEmpty) {
-                        //           await Navigator.of(context).push(
-                        //             MaterialPageRoute(
-                        //                 builder: (context) => PlanAddPage(
-                        //                       note: note,
-                        //                     )),
-                        //           );
-                        //         }
-                        //         if (title == "") {
-                        //           ScaffoldMessenger.of(context).showSnackBar(
-                        //             SnackBar(
-                        //               content:
-                        //                   Text("Please add the journey first"),
-                        //               duration: Duration(seconds: 3),
-                        //               backgroundColor: Colors.red,
-                        //             ),
-                        //           );
-                        //         }
-
-                        //         print(note);
-                        //       },
-                        //       style: ElevatedButton.styleFrom(
-                        //         primary: AppColors.mainColor,
-                        //       ),
-                        //       child: Row(
-                        //         children: [
-                        //           Spacer(),
-                        //           Text(
-                        //             "Make yor Plan",
-                        //             style: TextStyle(
-                        //                 color: Colors.white, fontSize: 20),
-                        //           ),
-                        //           SizedBox(
-                        //             width: 20,
-                        //           ),
-                        //           IconTheme(
-                        //               data: IconThemeData(
-                        //                   color: Colors.white, size: 30),
-                        //               child: Icon(
-                        //                 Icons.arrow_right_alt,
-                        //               )),
-                        //           Spacer(),
-                        //         ],
-                        //       )),
-                        // ),

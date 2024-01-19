@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:travel_journal/components/app_colors.dart';
 import 'package:travel_journal/config/app_images.dart';
+import 'package:travel_journal/services/map/map_services.dart';
 import 'package:weather/weather.dart';
 
 class WeatherPage extends StatefulWidget {
@@ -13,6 +14,7 @@ class WeatherPage extends StatefulWidget {
 
 class _WeatherPageState extends State<WeatherPage> {
   final WeatherFactory _wf = WeatherFactory("2660213db2e9ab8cc30ac0270eacb707");
+  MapServices mapServices = MapServices();
 
   Weather? _weather;
   String cityname = '';
@@ -20,7 +22,23 @@ class _WeatherPageState extends State<WeatherPage> {
   @override
   void initState() {
     super.initState();
-    _fetchWeather('');
+    getCurrentPos();
+  }
+
+  void getCurrentPos() {
+    mapServices.getUserLocationAccess().then((value) {
+      mapServices
+          .getCityFromCoordinates(value.latitude, value.longitude)
+          .then((value) {
+        setState(() {
+          _wf.currentWeatherByCityName(value).then((value) {
+            setState(() {
+              _weather = value;
+            });
+          });
+        });
+      });
+    });
   }
 
   void _fetchWeather(String cityName) {
@@ -60,7 +78,15 @@ class _WeatherPageState extends State<WeatherPage> {
   Widget _buildUI() {
     if (_weather == null) {
       return const Center(
-        child: CircularProgressIndicator(),
+        child: Column(children: [
+          CircularProgressIndicator(
+            color: AppColors.mainColor,
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Text("Loading current weather...")
+        ]),
       );
     }
     return SizedBox(
@@ -116,7 +142,7 @@ class _WeatherPageState extends State<WeatherPage> {
           fillColor: Colors.black.withOpacity(0.2),
         ),
         onChanged: (value) {
-          cityname = value;
+          _fetchWeather(value);
         },
         onSubmitted: (value) {
           _fetchWeather(value);
